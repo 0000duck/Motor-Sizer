@@ -205,7 +205,7 @@
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(886, 152);
+            this.label8.Location = new System.Drawing.Point(841, 152);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(192, 37);
@@ -216,7 +216,7 @@
             // 
             this.Submit.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.Submit.Font = new System.Drawing.Font("Arial Black", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Submit.Location = new System.Drawing.Point(570, 262);
+            this.Submit.Location = new System.Drawing.Point(523, 262);
             this.Submit.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Submit.Name = "Submit";
             this.Submit.Size = new System.Drawing.Size(160, 82);
@@ -241,21 +241,21 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(279, 34);
+            this.label7.Location = new System.Drawing.Point(383, 34);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(645, 55);
+            this.label7.Size = new System.Drawing.Size(413, 55);
             this.label7.TabIndex = 19;
-            this.label7.Text = "Fill out available information";
+            this.label7.Text = "Motor Sizing Tool";
             // 
             // outputBox
             // 
-            this.outputBox.Location = new System.Drawing.Point(770, 209);
+            this.outputBox.Location = new System.Drawing.Point(706, 209);
             this.outputBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.outputBox.Multiline = true;
             this.outputBox.Name = "outputBox";
             this.outputBox.ReadOnly = true;
-            this.outputBox.Size = new System.Drawing.Size(398, 330);
+            this.outputBox.Size = new System.Drawing.Size(462, 330);
             this.outputBox.TabIndex = 20;
             // 
             // SizerMain

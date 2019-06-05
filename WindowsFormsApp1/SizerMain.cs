@@ -263,12 +263,13 @@ namespace WindowsFormsApp1
                         }
                         if (actuator_choice != "")
                         {
-
+                            outputBox.AppendText("\tActuator: " + actuator_choice);
                         }
                     }
                     else
                     {
                         outputBox.AppendText(" No solution found.\n");
+                        outputBox.AppendText("\nTry changing one or more options.");
                     }
                 }
             }
@@ -287,7 +288,7 @@ namespace WindowsFormsApp1
                 this.Close();
             }
         }
-
+//***********************************************************************************************
 /////////Part data and functions pertaining to sizing
         //Set arrays of parts classes
         public List<Motor> Class5D = new List<Motor> { }; //Class 5 D style motors
@@ -372,8 +373,6 @@ namespace WindowsFormsApp1
                 //append
                 Class6.Add(temp3);
             }
-
-            //OEM Gears
 
         }
 

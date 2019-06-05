@@ -42,6 +42,14 @@ namespace WindowsFormsApp1
             if (axis_in.io) { IOBox.CheckState = CheckState.Checked; }
         }
 
+        //Change to rotation
+        public void Rotate(object sender, EventArgs e)
+        {
+            if (rotateButton.Checked == true){
+                actuatorBox.CheckState = CheckState.Unchecked;
+            }
+        }
+
 
         //Exit button
         public void Exit(object sender, EventArgs e)
@@ -63,7 +71,6 @@ namespace WindowsFormsApp1
             //Close window
             this.Close();
         }
-
 
     }
 }

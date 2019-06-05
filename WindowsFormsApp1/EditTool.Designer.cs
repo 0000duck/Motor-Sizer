@@ -146,6 +146,7 @@
             this.rotateButton.TabStop = true;
             this.rotateButton.Text = "Rotation";
             this.rotateButton.UseVisualStyleBackColor = true;
+            this.rotateButton.CheckedChanged += new System.EventHandler(this.Rotate);
             // 
             // linearButton
             // 
@@ -411,6 +412,7 @@
             this.Controls.Add(this.exitButton);
             this.Name = "EditTool";
             this.Text = "Edit Axis Info";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Exit);
             ((System.ComponentModel.ISupportInitialize)(this.torqueBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.speedBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dutyBox)).EndInit();

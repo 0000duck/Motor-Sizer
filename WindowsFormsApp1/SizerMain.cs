@@ -126,9 +126,14 @@ namespace WindowsFormsApp1
         {
 
             //Wait message
-            outputBox.Text = "Sizing the application. Please wait...";
+            //outputBox.Text = "Sizing the application. Please wait...";
+            for (int i = 0; i < indices.Count(); i++)
+            {
+                indices[i] = -1;
+            }
 
             //Take the important axes-- the ones that have not been deleted
+            n_sizing = 0;
             for (int i = 0; i < axes.Count(); i++)
             {
                 if (axes[i].exist)
@@ -144,9 +149,18 @@ namespace WindowsFormsApp1
                 //get product data
                 get_data();
 
+                outputBox.Clear();
+                outputBox.Text = "\n"; 
+
                 //size each axis
                 for (int i = 0; i < indices.Count(); i++)
                 {
+                    while (indices[i] == -1)
+                    {
+                        i++;
+                        if (i >= indices.Count()) { break; }
+                    }
+
                     string name_ext = ""; //PN extention for additional options
                     string gh_choice = ""; //gearhead pairing for motor if necessary
                     string actuator_choice = ""; //actuator choice for motor if necessary
@@ -251,9 +265,8 @@ namespace WindowsFormsApp1
                     }
 
                     //Print the answer
-                    if (i == 0) { outputBox.Clear(); outputBox.Text = "\n"; }
-                    outputBox.AppendText("[" + axes[indices[i]].name + "]:\n");
 
+                    outputBox.AppendText("[" + axes[indices[i]].name + "]:\n");
                     if (axes[indices[i]] != null && axes[indices[i]].best_solution != null)
                     {
                         outputBox.AppendText("\tRecommended motor: "+axes[indices[i]].best_solution + "\n");

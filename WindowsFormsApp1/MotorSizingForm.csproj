@@ -47,7 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Axis_class.cs" />
-    <Compile Include="Class1.cs" />
+    <Compile Include="Actuator.cs" />
     <Compile Include="Gearhead_class.cs" />
     <Compile Include="EditTool.cs">
       <SubType>Form</SubType>

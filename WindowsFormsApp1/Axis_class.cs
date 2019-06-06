@@ -13,18 +13,22 @@ namespace WindowsFormsApp1
         public string t_unit;
         public double speed;
         public string s_unit;
+        public double accel;
+        public string accel_unit;
         public double duty = 100;
         public double pitch;
-        public string p_unit;
+        public string ps_unit; //unit of pitch or stroke
         public double thrust;
         public string th_unit;
-        public bool type; //type 0 = rotation, type 1 = linear
-        public bool actuate;
+        public bool type=true; //true for linear, false for rotation
+        public bool actuate=true; //true for an actuator being sized
         public bool io;
         public bool brake;
         public bool de;
         public bool exist=true;
         public double stroke;
+        public double mass;
+        public string m_unit;
 
         //sizing tool output
         public string best_solution;

@@ -26,16 +26,27 @@ namespace WindowsFormsApp1
             torqueBox.Value = Convert.ToDecimal(axis_in.torque);
             speedBox.Value = Convert.ToDecimal(axis_in.speed);
             thrustBox.Value = Convert.ToDecimal(axis_in.thrust);
-            pitchBox.Value = Convert.ToDecimal(axis_in.pitch);
             dutyBox.Value = Convert.ToDecimal(axis_in.duty);
-            strokeBox.Value = Convert.ToDecimal(axis_in.stroke);
+            if (axis_in.actuate == true) { pitchStrokeBox.Value = Convert.ToDecimal(axis_in.stroke); }
+            else { pitchStrokeBox.Value = Convert.ToDecimal(axis_in.pitch); }
+            accelBox.Value = Convert.ToDecimal(axis_in.accel);
+
             //Fill in the units
             if (axis_in.t_unit != null) { torqueUnit.SelectedValue = axis_in.t_unit; }
             if (axis_in.s_unit != null) { speedUnit.SelectedValue = axis_in.s_unit; }
-            if (axis_in.p_unit != null) { pitchUnit.SelectedValue = axis_in.p_unit; }
+            if (axis_in.ps_unit != null) { pitchStrokeUnit.SelectedValue = axis_in.ps_unit; }
             if (axis_in.th_unit != null) { thrustUnit.SelectedValue = axis_in.th_unit; }
+            if (axis_in.m_unit != null) { MassUnit.SelectedValue = axis_in.m_unit; }
+            if (axis_in.accel_unit != null) { ADUnit.SelectedValue = axis_in.accel_unit; }
+
             //Check the boxes and buttons
-            if (axis_in.type) { linearButton.Checked = true; } else { rotateButton.Checked=true; }
+            if (axis_in.type){linearButton.Checked = true;}
+            else {
+                rotateButton.Checked=true;
+                thrustBox.Visible = false;
+                ThrustLabel.Visible = false;
+                thrustUnit.Visible = false;
+            }
             if (axis_in.actuate) { actuatorBox.CheckState=CheckState.Checked; }
             if (axis_in.brake) { brakeCheck.CheckState = CheckState.Checked; }
             if (axis_in.de) { DEBox.CheckState = CheckState.Checked; }
@@ -45,8 +56,47 @@ namespace WindowsFormsApp1
         //Change to rotation
         public void Rotate(object sender, EventArgs e)
         {
-            if (rotateButton.Checked == true){
+            //When rotational motion is selected, uncheck the actuator box, and hide linear motion prompts
+            if (rotateButton.Checked == true)
+            {
                 actuatorBox.CheckState = CheckState.Unchecked;
+                thrustBox.Visible = false;
+                ThrustLabel.Visible = false;
+                thrustUnit.Visible = false;
+                pitchStrokeBox.Visible = false;
+                PitchLabel.Visible = false;
+                StrokeLabel.Visible = false;
+                pitchStrokeUnit.Visible = false;
+            }
+        }
+
+        public void Linear(object sender, EventArgs e)
+        {
+            if (linearButton.Checked == true)
+            {
+                actuatorBox.Checked = true;
+                thrustBox.Visible = true;
+                ThrustLabel.Visible = true;
+                thrustUnit.Visible = true;
+                pitchStrokeUnit.Visible = true;
+                pitchStrokeBox.Visible = true;
+                StrokeLabel.Visible = true;
+            }
+        }
+
+        public void Actuator(object sender,EventArgs e)
+        {
+            if (actuatorBox.Checked == true)
+            {
+                pitchStrokeBox.Visible = true;
+                StrokeLabel.Visible = true;
+                PitchLabel.Visible = false;
+            }
+            else
+            {
+                pitchStrokeBox.Visible = true;
+                StrokeLabel.Visible = false;
+                PitchLabel.Visible = true;
             }
         }
 
@@ -59,9 +109,20 @@ namespace WindowsFormsApp1
             return_axis.name = nameBox.Text;
             return_axis.torque = Convert.ToDouble(torqueBox.Value);
             return_axis.speed = Convert.ToDouble(speedBox.Value);
-            return_axis.pitch = Convert.ToDouble(pitchBox.Value);
+            if (PitchLabel.Visible == true)
+            {
+                return_axis.pitch = Convert.ToDouble(pitchStrokeBox.Value);
+                return_axis.actuate = false;
+                return_axis.stroke = -1.0;
+            }
+            else if (StrokeLabel.Visible == true)
+            {
+                return_axis.stroke = Convert.ToDouble(pitchStrokeBox.Value);
+                return_axis.actuate = true;
+                return_axis.pitch = -1.0;
+            }
+
             return_axis.duty = Convert.ToDouble(dutyBox.Value);
-            return_axis.stroke = Convert.ToDouble(strokeBox.Value);
             return_axis.type = linearButton.Checked;
             return_axis.actuate = actuatorBox.Checked;
             return_axis.brake = brakeCheck.Checked;
@@ -71,6 +132,5 @@ namespace WindowsFormsApp1
             //Close window
             this.Close();
         }
-
     }
 }

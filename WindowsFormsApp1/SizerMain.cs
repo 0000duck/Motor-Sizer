@@ -266,7 +266,7 @@ namespace WindowsFormsApp1
 
                     //Print the answer
 
-                    outputBox.AppendText("[" + axes[indices[i]].name + "]:\n");
+                    outputBox.AppendText("\n[" + axes[indices[i]].name + "]:\n");
                     if (axes[indices[i]] != null && axes[indices[i]].best_solution != null)
                     {
                         outputBox.AppendText("\tRecommended motor: "+axes[indices[i]].best_solution + "\n");

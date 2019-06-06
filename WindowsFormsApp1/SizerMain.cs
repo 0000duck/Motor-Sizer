@@ -125,11 +125,10 @@ namespace WindowsFormsApp1
         public void Size_click(object sender, EventArgs e)
         {
 
-            //Wait message
-            //outputBox.Text = "Sizing the application. Please wait...";
-            for (int i = 0; i < indices.Count(); i++)
+            //Clear indices list
+            while (indices.Count()>0)
             {
-                indices[i] = -1;
+                indices.Remove(indices[0]);
             }
 
             //Take the important axes-- the ones that have not been deleted
@@ -155,12 +154,6 @@ namespace WindowsFormsApp1
                 //size each axis
                 for (int i = 0; i < indices.Count(); i++)
                 {
-                    while (indices[i] == -1)
-                    {
-                        i++;
-                        if (i >= indices.Count()) { break; }
-                    }
-
                     string name_ext = ""; //PN extention for additional options
                     string gh_choice = ""; //gearhead pairing for motor if necessary
                     string actuator_choice = ""; //actuator choice for motor if necessary
@@ -287,7 +280,7 @@ namespace WindowsFormsApp1
                 }
             }
             //If no axes found
-            else { outputBox.Text = "No axes to size."; }
+            else { outputBox.Text = "No axes to size.\nPlease click 'Add' to size an axis."; }
         }
 
 
@@ -335,7 +328,7 @@ namespace WindowsFormsApp1
         string[] options2 = { "IP", "FB01" };
 
         /////Class 6 
-        string[] names3 = { "SM23166MT-E", "SM23216MG-E" };
+        string[] names3 = { "SM23166MT-E", "SM23216MT-E" };
         int frames3 =  23 ;
         double[] torq_cs3 = { 68, 165 };
         double[] torq_ps3 = { 128, 300 };

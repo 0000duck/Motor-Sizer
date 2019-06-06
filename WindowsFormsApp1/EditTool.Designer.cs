@@ -339,9 +339,9 @@
             0,
             0});
             this.thrustBox.Name = "thrustBox";
-            this.thrustBox.ReadOnly = true;
             this.thrustBox.Size = new System.Drawing.Size(126, 26);
             this.thrustBox.TabIndex = 32;
+            this.thrustBox.TabStop = false;
             // 
             // pitchBox
             // 
@@ -353,7 +353,6 @@
             0,
             0});
             this.pitchBox.Name = "pitchBox";
-            this.pitchBox.ReadOnly = true;
             this.pitchBox.Size = new System.Drawing.Size(126, 26);
             this.pitchBox.TabIndex = 33;
             // 

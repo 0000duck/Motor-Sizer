@@ -196,7 +196,7 @@ namespace WindowsFormsApp1
                     {
                         if (axes[indices[i]].brake) { name_ext += "-BRK"; }
                         name_ext += "-IP";
-                        if (protocol == "Devicenet") { name_ext += "-DN"; }
+                        if (protocol == "DeviceNet") { name_ext += "-DN"; }
                         else if (protocol == "CANopen") { name_ext += "-C"; }
 
                         //check Class 5 M
@@ -205,7 +205,7 @@ namespace WindowsFormsApp1
                             int feas = Evaluate(Class5M[k], axes[indices[i]]);
                             if (feas == 1)
                             {
-                                axes[indices[i]].best_solution = Class5M[k].name;
+                                axes[indices[i]].best_solution = Class5M[k].name + name_ext;
                                 break;
                             }
                         }
@@ -228,7 +228,7 @@ namespace WindowsFormsApp1
                         //check for special options & add to PN
                         if (axes[indices[i]].de) { name_ext += "-DE"; }
                         if (axes[indices[i]].brake) { name_ext += "-BRK"; }
-                        if (protocol == "Devicenet") { name_ext += "-DN"; }
+                        if (protocol == "DeviceNet") { name_ext += "-DN"; }
                         else if (protocol == "Profibus") { name_ext += "-PB"; }
                         else if (protocol == "CANopen" || indices.Count() > 1) { name_ext += "-CDS7"; }
                         if (axes[indices[i]].io) { name_ext += "-AD1"; }

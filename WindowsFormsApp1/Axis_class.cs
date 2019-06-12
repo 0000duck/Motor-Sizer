@@ -32,6 +32,7 @@ namespace WindowsFormsApp1
 
         //sizing tool output
         public string best_solution;
+        public string alt_soln;
         public string gearhead;
         public string actuator;
     }

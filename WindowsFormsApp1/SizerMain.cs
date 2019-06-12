@@ -149,7 +149,7 @@ namespace WindowsFormsApp1
                 get_data();
 
                 outputBox.Clear();
-                outputBox.Text = "\n"; 
+                outputBox.Text = "\n";
 
                 //size each axis
                 for (int i = 0; i < indices.Count(); i++)
@@ -164,8 +164,8 @@ namespace WindowsFormsApp1
                     {
                         //Get the protocol code for motor PN 
                         if (protocol == "Ethernet/IP") { name_ext = "IP"; }
-                        else if(protocol == "EtherCAT") { name_ext = "EC"; }
-                        else if(protocol == "Profinet") { name_ext = "PN"; }
+                        else if (protocol == "EtherCAT") { name_ext = "EC"; }
+                        else if (protocol == "Profinet") { name_ext = "PN"; }
 
                         //check Class 6
                         for (int k = 1; k < Class6.Count(); k++)
@@ -175,7 +175,7 @@ namespace WindowsFormsApp1
                             {
                                 axes[indices[i]].best_solution = Class6[k].name + name_ext;
                                 break;
-                            }   
+                            }
                         }
                         //if no solution out of these, check for use with gearhead
                         if (axes[indices[i]].best_solution == null)
@@ -188,11 +188,16 @@ namespace WindowsFormsApp1
                                     axes[indices[i]].best_solution = Class6[k].name + name_ext;
                                 }
                             }
+                            if (axes[indices[i]].best_solution == null)
+                            {
+                                //Create alternative solution
+                                axes[indices[i]].alt_soln = "Class6";
+                            }
                         }
                     }
 
                     //Class 5 for IP rating 
-                    else if (moisture=="Splash/rain"||moisture=="Washdown")
+                    else if (moisture == "Splash/rain" || moisture == "Washdown")
                     {
                         if (axes[indices[i]].brake) { name_ext += "-BRK"; }
                         name_ext += "-IP";
@@ -220,6 +225,11 @@ namespace WindowsFormsApp1
                                     axes[indices[i]].best_solution = Class5M[k].name + name_ext;
                                 }
                             }
+                            if (axes[indices[i]].best_solution == null)
+                            {
+                                //Create alternative solution
+                                axes[indices[i]].alt_soln = "Class5M";
+                            }
                         }
                     }
                     else
@@ -234,12 +244,12 @@ namespace WindowsFormsApp1
                         if (axes[indices[i]].io) { name_ext += "-AD1"; }
 
                         //get part number w/o GH 
-                        for (int k=1; k < Class5D.Count(); k++)
+                        for (int k = 1; k < Class5D.Count(); k++)
                         {
                             int feas = Evaluate(Class5D[k], axes[indices[i]]);
                             if (feas == 1)
                             {
-                                axes[indices[i]].best_solution = Class5D[k].name+name_ext;
+                                axes[indices[i]].best_solution = Class5D[k].name + name_ext;
                                 break;
                             }
                         }
@@ -251,8 +261,13 @@ namespace WindowsFormsApp1
                                 gh_choice = Reduction(Class5D[k], axes[indices[i]]);
                                 if (gh_choice != "")
                                 {
-                                    axes[indices[i]].best_solution = Class5D[k].name+name_ext;
+                                    axes[indices[i]].best_solution = Class5D[k].name + name_ext;
                                 }
+                            }
+                            if (axes[indices[i]].best_solution == null)
+                            {
+                                //Create alternative solution
+                                axes[indices[i]].alt_soln = "Class5D";
                             }
                         }
                     }
@@ -262,10 +277,10 @@ namespace WindowsFormsApp1
                     outputBox.AppendText("\n[" + axes[indices[i]].name + "]:\n");
                     if (axes[indices[i]] != null && axes[indices[i]].best_solution != null)
                     {
-                        outputBox.AppendText("\tRecommended motor: "+axes[indices[i]].best_solution + "\n");
+                        outputBox.AppendText("\tRecommended motor: " + axes[indices[i]].best_solution + "\n");
                         if (gh_choice != "")
                         {
-                            outputBox.AppendText("\tGearhead: "+ gh_choice);
+                            outputBox.AppendText("\tGearhead: " + gh_choice);
                         }
                         if (actuator_choice != "")
                         {
@@ -274,13 +289,26 @@ namespace WindowsFormsApp1
                     }
                     else
                     {
-                        outputBox.AppendText(" No solution found.\n");
-                        outputBox.AppendText("\nTry changing one or more options.");
+                        outputBox.AppendText("\t No solution found.\n");
+                        outputBox.AppendText("\tHighest torque= ");
+                        if (axes[indices[i]].alt_soln == "Class5D")
+                        {
+                            outputBox.AppendText(Convert.ToString(Class5D.Last().torq_c * 100));
+                            outputBox.AppendText(" oz-in at " + Convert.ToString(Class5D.Last().speed / 100) + " RPM \n");
+                            outputBox.AppendText("\t with SM34505D and 100:1 GH.\n");
+                        }
                     }
                 }
+
+
+
             }
             //If no axes found
-            else { outputBox.Text = "No axes to size.\nPlease click 'Add' to size an axis."; }
+            else
+            {
+                outputBox.Text = "No axes to size.\nPlease click 'Add' to size an axis.";
+            }
+                
         }
 
 

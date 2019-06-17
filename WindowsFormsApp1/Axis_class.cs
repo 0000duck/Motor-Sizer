@@ -31,9 +31,10 @@ namespace WindowsFormsApp1
         public string m_unit;
 
         //sizing tool output
-        public string best_solution;
-        public string alt_soln;
-        public string gearhead;
-        public string actuator;
+        public string best_solution; //PN of the motor that fits all parameters
+        public int alt_soln;    //index within list of motors of the next-best solution
+        public string gearhead="";
+        public double reduction=1; //ratio of the gearhead part number 
+        public string actuator="";
     }
 }

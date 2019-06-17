@@ -157,10 +157,10 @@ namespace WindowsFormsApp1
                     string name_ext = ""; //PN extention for additional options
                     string gh_choice = ""; //gearhead pairing for motor if necessary
                     string actuator_choice = ""; //actuator choice for motor if necessary
-                    double best_feas = -10000000;
-                    List<Motor> motors = new List<Motor> { };
+                    double best_feas = -10000000; // best feasibility for alternate solution
+                    List<Motor> motors = new List<Motor> { }; //list of motors that are being evaluated for feasibility
 
-                    //****Do the actual sizing calculations for each axis****
+                    //Check for special conditions limiting motor type 
                     ////Class 6 for ethernet protocols
                     if (protocol == "Ethernet/IP" || protocol == "EtherCAT" || protocol == "Profinet")
                     {
@@ -171,7 +171,7 @@ namespace WindowsFormsApp1
                         motors = Class6;
                     }
 
-                    //Class 5 for IP rating 
+                    /////Class 5 for IP rating 
                     else if (moisture == "Splash/rain" || moisture == "Washdown")
                     {
                         if (axes[indices[i]].brake) { name_ext += "-BRK"; }
@@ -181,7 +181,7 @@ namespace WindowsFormsApp1
                         motors = Class5M;
                     }
 
-                    //No special restriction==> Class 5 D
+                    /////No special restriction==> Class 5 D
                     else
                     {
                         //check for special options & add to PN
@@ -195,7 +195,7 @@ namespace WindowsFormsApp1
                         motors = Class5D;
                     }
 
-                    //Size
+                    //****Do the actual sizing calculations for each axis****
                     for (int k = 1; k < motors.Count(); k++)
                     {
                         double feas = Evaluate(motors[k], axes[indices[i]]);
@@ -204,21 +204,49 @@ namespace WindowsFormsApp1
                             axes[indices[i]].best_solution = motors[k].name + name_ext;
                             break;
                         }
-                        else if (feas > best_feas)
+                        else if (feas > best_feas) //if not a solution, but better option, store its index
                         {
                             best_feas = feas;
                             axes[indices[i]].alt_soln = k;
                         }
                     }
-                    //if no solution out of these, check for use with gearhead
+                    //If no solution out of these, check for use with gearhead
                     if (axes[indices[i]].best_solution == null)
                     {
-                        for (int k = 0; k < motors.Count(); k++)
+                        string choice = "";
+                        string type = "SP";
+                        double[] check_gearheads = OEM_ratios;
+
+                        for (int f = 0; f < 2; f++)
                         {
-                            gh_choice = Reduction(motors[k], axes[indices[i]]);
-                            if (gh_choice != "")
+                            for (int k = 0; k < motors.Count(); k++)
                             {
-                                axes[indices[i]].best_solution = motors[k].name + name_ext;
+                                for (int j = 0; j < check_gearheads.Count(); j++)
+                                {
+                                    double feas = Reduction(motors[k], axes[indices[i]], check_gearheads[j]);
+                                    if (feas > best_feas)
+                                    {
+                                        choice = Convert.ToString(check_gearheads[j]);
+                                        if (type == "SP")
+                                        {
+                                            while (choice.Count() < 3) { choice = "0" + choice; }
+                                        }
+                                        choice = "GH" + type + choice;
+                                        axes[indices[i]].gearhead = choice;
+                                        if (feas == 1)
+                                        {
+                                            axes[indices[i]].best_solution = motors[k].name + name_ext;
+                                        }
+                                        else
+                                        {
+                                            axes[indices[i]].reduction = check_gearheads[j];
+                                            best_feas = feas;
+                                            axes[indices[i]].alt_soln = k;
+                                        }
+                                    }
+                                }
+                                type = "P";
+                                check_gearheads = P_ratios;
                             }
                         }
                     }
@@ -228,31 +256,34 @@ namespace WindowsFormsApp1
                     if (axes[indices[i]] != null && axes[indices[i]].best_solution != null)
                     {
                         outputBox.AppendText("\tRecommended motor: " + axes[indices[i]].best_solution + "\n");
-                        if (gh_choice != "")
+                        if (axes[indices[i]].gearhead != "")
                         {
-                            outputBox.AppendText("\tGearhead: " + gh_choice);
+                            outputBox.AppendText("\tGearhead: " + axes[indices[i]].gearhead);
                         }
-                        if (actuator_choice != "")
+                        if (axes[indices[i]].actuator != "")
                         {
-                            outputBox.AppendText("\tActuator: " + actuator_choice);
+                            outputBox.AppendText("\tActuator: " + axes[indices[i]].actuator);
                         }
                     }
                     else
                     {
-                        outputBox.AppendText("\t No solution found.\n");
-                        outputBox.AppendText("\tHighest torque= ");
-                        if (axes[indices[i]].alt_soln == "Class5D")
+                        outputBox.AppendText("\tNo solution found.\n");
+                        outputBox.AppendText("\tBest option: ");
+                        outputBox.AppendText(motors[axes[indices[i]].alt_soln].name+name_ext);
+                        if (axes[indices[i]].gearhead != "")
                         {
-                            outputBox.AppendText(Convert.ToString(Class5D.Last().torq_c * 100));
-                            outputBox.AppendText(" oz-in at " + Convert.ToString(Class5D.Last().speed / 100) + " RPM \n");
-                            outputBox.AppendText("\t with SM34505D and 100:1 GH.\n");
+                            outputBox.AppendText(", with gearhead: " + axes[indices[i]].gearhead+"\n");
                         }
+                        else
+                        {
+                            outputBox.AppendText("\n");
+                        }
+                        outputBox.AppendText("\t\tTorque = " + motors[axes[indices[i]].alt_soln].torq_c*axes[indices[i]].reduction+" oz-in \n");
+                        outputBox.AppendText("\t\tSpeed = " + motors[axes[indices[i]].alt_soln].speed/ axes[indices[i]].reduction + "RPM \n");
                     }
                 }
-
-
-
             }
+
             //If no axes found
             else
             {
@@ -378,28 +409,21 @@ namespace WindowsFormsApp1
         }
 
         //Pick a gearhead
-        public string Reduction(Motor check_motor, Axis this_axis)
+        public double Reduction(Motor check_motor, Axis this_axis, double gear_ratio)
         {
-            string choice = "";
-            string type = "SP";
-            double[] check_gearheads = OEM_ratios;
-            for (int k = 0; k < 2; k++)
+            double weight;
+            double new_torque = gear_ratio * check_motor.torq_c * 100 / this_axis.duty;
+            double new_speed = check_motor.speed / gear_ratio;
+            if (this_axis.torque <= new_torque && this_axis.speed < new_speed)
             {
-                for (int i = 0; i < check_gearheads.Count(); i++)
-                {
-                    double new_torque = check_gearheads[i] * check_motor.torq_c * 100 / this_axis.duty;
-                    double new_speed = check_motor.speed / check_gearheads[i];
-                    if (this_axis.torque <= new_torque && this_axis.speed < new_speed)
-                    {
-                        choice = Convert.ToString(check_gearheads[i]);
-                        while (choice.Count() < 3) { choice = "0" + choice; }
-                        choice = "GH" + type + choice;
-                    }
-                }
-                type = "P";
-                check_gearheads = P_ratios;
+                weight = 1;
             }
-            return choice;
+            else
+            {
+                weight = 10 * (new_torque - this_axis.torque) + 10*(this_axis.speed - new_speed);
+            }
+            
+            return weight;
         }
 
         //Actuator sizing

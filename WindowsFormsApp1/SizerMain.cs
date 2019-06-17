@@ -155,8 +155,6 @@ namespace WindowsFormsApp1
                 for (int i = 0; i < indices.Count(); i++)
                 {
                     string name_ext = ""; //PN extention for additional options
-                    string gh_choice = ""; //gearhead pairing for motor if necessary
-                    string actuator_choice = ""; //actuator choice for motor if necessary
                     double best_feas = -10000000; // best feasibility for alternate solution
                     List<Motor> motors = new List<Motor> { }; //list of motors that are being evaluated for feasibility
 
@@ -177,7 +175,6 @@ namespace WindowsFormsApp1
                         if (axes[indices[i]].brake) { name_ext += "-BRK"; }
                         name_ext += "-IP";
                         if (protocol == "DeviceNet") { name_ext += "-DN"; }
-                        else if (protocol == "CANopen") { name_ext += "-C"; }
                         motors = Class5M;
                     }
 
@@ -272,14 +269,15 @@ namespace WindowsFormsApp1
                         outputBox.AppendText(motors[axes[indices[i]].alt_soln].name+name_ext);
                         if (axes[indices[i]].gearhead != "")
                         {
-                            outputBox.AppendText(", with gearhead: " + axes[indices[i]].gearhead+"\n");
+                            outputBox.AppendText(", \n");
+                            outputBox.AppendText("\twith gearhead: " + axes[indices[i]].gearhead+"\n");
                         }
                         else
                         {
                             outputBox.AppendText("\n");
                         }
-                        outputBox.AppendText("\t\tTorque = " + motors[axes[indices[i]].alt_soln].torq_c*axes[indices[i]].reduction+" oz-in \n");
-                        outputBox.AppendText("\t\tSpeed = " + motors[axes[indices[i]].alt_soln].speed/ axes[indices[i]].reduction + "RPM \n");
+                        outputBox.AppendText("\t\tTorque = " + Convert.ToInt16(motors[axes[indices[i]].alt_soln].torq_c*axes[indices[i]].reduction)+" oz-in \n");
+                        outputBox.AppendText("\t\tSpeed = " + Convert.ToInt16(motors[axes[indices[i]].alt_soln].speed/ axes[indices[i]].reduction) + " RPM \n");
                     }
                 }
             }
@@ -402,7 +400,7 @@ namespace WindowsFormsApp1
             }
             else
             {
-                feasibility = 1000 * (check_motor.torq_c - torq_compare) + (check_motor.speed - this_axis.speed);
+                feasibility = -1*Math.Abs(check_motor.torq_c - torq_compare) - Math.Abs(check_motor.speed - this_axis.speed);
             }
 
             return feasibility;
@@ -420,7 +418,7 @@ namespace WindowsFormsApp1
             }
             else
             {
-                weight = 10 * (new_torque - this_axis.torque) + 10*(this_axis.speed - new_speed);
+                weight = -1 * Math.Abs(new_torque - this_axis.torque) - Math.Abs(this_axis.speed - new_speed);
             }
             
             return weight;

@@ -240,7 +240,8 @@ namespace WindowsFormsApp1
                         if (axes[indices[i]].brake) { name_ext += "-BRK"; }
                         if (protocol == "DeviceNet") { name_ext += "-DN"; }
                         else if (protocol == "Profibus") { name_ext += "-PB"; }
-                        else if (protocol == "CANopen" || indices.Count() > 1) { name_ext += "-CDS7"; }
+                        else if (protocol == "CANopen" && indices.Count()>1 || indices.Count() > 1) { name_ext += "-CDS7"; }
+                        else if (protocol == "CANopen") { name_ext += "-C"; }
                         if (axes[indices[i]].io) { name_ext += "-AD1"; }
 
                         //get part number w/o GH 

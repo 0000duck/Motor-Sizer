@@ -157,6 +157,8 @@ namespace WindowsFormsApp1
                     string name_ext = ""; //PN extention for additional options
                     string gh_choice = ""; //gearhead pairing for motor if necessary
                     string actuator_choice = ""; //actuator choice for motor if necessary
+                    double best_feas = -10000000;
+                    List<Motor> motors = new List<Motor> { };
 
                     //****Do the actual sizing calculations for each axis****
                     ////Class 6 for ethernet protocols
@@ -166,34 +168,7 @@ namespace WindowsFormsApp1
                         if (protocol == "Ethernet/IP") { name_ext = "IP"; }
                         else if (protocol == "EtherCAT") { name_ext = "EC"; }
                         else if (protocol == "Profinet") { name_ext = "PN"; }
-
-                        //check Class 6
-                        for (int k = 1; k < Class6.Count(); k++)
-                        {
-                            int feas = Evaluate(Class6[k], axes[indices[i]]);
-                            if (feas == 1)
-                            {
-                                axes[indices[i]].best_solution = Class6[k].name + name_ext;
-                                break;
-                            }
-                        }
-                        //if no solution out of these, check for use with gearhead
-                        if (axes[indices[i]].best_solution == null)
-                        {
-                            for (int k = 0; k < Class6.Count(); k++)
-                            {
-                                gh_choice = Reduction(Class6[k], axes[indices[i]]);
-                                if (gh_choice != "")
-                                {
-                                    axes[indices[i]].best_solution = Class6[k].name + name_ext;
-                                }
-                            }
-                            if (axes[indices[i]].best_solution == null)
-                            {
-                                //Create alternative solution
-                                axes[indices[i]].alt_soln = "Class6";
-                            }
-                        }
+                        motors = Class6;
                     }
 
                     //Class 5 for IP rating 
@@ -203,38 +178,12 @@ namespace WindowsFormsApp1
                         name_ext += "-IP";
                         if (protocol == "DeviceNet") { name_ext += "-DN"; }
                         else if (protocol == "CANopen") { name_ext += "-C"; }
-
-                        //check Class 5 M
-                        for (int k = 1; k < Class5M.Count(); k++)
-                        {
-                            int feas = Evaluate(Class5M[k], axes[indices[i]]);
-                            if (feas == 1)
-                            {
-                                axes[indices[i]].best_solution = Class5M[k].name + name_ext;
-                                break;
-                            }
-                        }
-                        //if no solution out of these, check for use with gearhead
-                        if (axes[indices[i]].best_solution == null)
-                        {
-                            for (int k = 0; k < Class5M.Count(); k++)
-                            {
-                                gh_choice = Reduction(Class5M[k], axes[indices[i]]);
-                                if (gh_choice != "")
-                                {
-                                    axes[indices[i]].best_solution = Class5M[k].name + name_ext;
-                                }
-                            }
-                            if (axes[indices[i]].best_solution == null)
-                            {
-                                //Create alternative solution
-                                axes[indices[i]].alt_soln = "Class5M";
-                            }
-                        }
+                        motors = Class5M;
                     }
-                    else
-                    {//No special restriction==> Class 5 D
 
+                    //No special restriction==> Class 5 D
+                    else
+                    {
                         //check for special options & add to PN
                         if (axes[indices[i]].de) { name_ext += "-DE"; }
                         if (axes[indices[i]].brake) { name_ext += "-BRK"; }
@@ -243,38 +192,38 @@ namespace WindowsFormsApp1
                         else if (protocol == "CANopen" && indices.Count()>1 || indices.Count() > 1) { name_ext += "-CDS7"; }
                         else if (protocol == "CANopen") { name_ext += "-C"; }
                         if (axes[indices[i]].io) { name_ext += "-AD1"; }
+                        motors = Class5D;
+                    }
 
-                        //get part number w/o GH 
-                        for (int k = 1; k < Class5D.Count(); k++)
+                    //Size
+                    for (int k = 1; k < motors.Count(); k++)
+                    {
+                        double feas = Evaluate(motors[k], axes[indices[i]]);
+                        if (feas == 1)
                         {
-                            int feas = Evaluate(Class5D[k], axes[indices[i]]);
-                            if (feas == 1)
-                            {
-                                axes[indices[i]].best_solution = Class5D[k].name + name_ext;
-                                break;
-                            }
+                            axes[indices[i]].best_solution = motors[k].name + name_ext;
+                            break;
                         }
-                        //if no solution out of these, check for use with gearhead
-                        if (axes[indices[i]].best_solution == null)
+                        else if (feas > best_feas)
                         {
-                            for (int k = 0; k < Class5D.Count(); k++)
+                            best_feas = feas;
+                            axes[indices[i]].alt_soln = k;
+                        }
+                    }
+                    //if no solution out of these, check for use with gearhead
+                    if (axes[indices[i]].best_solution == null)
+                    {
+                        for (int k = 0; k < motors.Count(); k++)
+                        {
+                            gh_choice = Reduction(motors[k], axes[indices[i]]);
+                            if (gh_choice != "")
                             {
-                                gh_choice = Reduction(Class5D[k], axes[indices[i]]);
-                                if (gh_choice != "")
-                                {
-                                    axes[indices[i]].best_solution = Class5D[k].name + name_ext;
-                                }
-                            }
-                            if (axes[indices[i]].best_solution == null)
-                            {
-                                //Create alternative solution
-                                axes[indices[i]].alt_soln = "Class5D";
+                                axes[indices[i]].best_solution = motors[k].name + name_ext;
                             }
                         }
                     }
 
                     //Print the answer
-
                     outputBox.AppendText("\n[" + axes[indices[i]].name + "]:\n");
                     if (axes[indices[i]] != null && axes[indices[i]].best_solution != null)
                     {
@@ -412,13 +361,17 @@ namespace WindowsFormsApp1
         }
 
         //Evaluate function
-        public int Evaluate(Motor check_motor, Axis this_axis)
+        public double Evaluate(Motor check_motor, Axis this_axis)
         {
             double torq_compare = this_axis.torque * this_axis.duty / 100;
-            int feasibility=0;
+            double feasibility=-100000;
             if (torq_compare<check_motor.torq_c && this_axis.speed < check_motor.speed)
             {
                 feasibility = 1;
+            }
+            else
+            {
+                feasibility = 1000 * (check_motor.torq_c - torq_compare) + (check_motor.speed - this_axis.speed);
             }
 
             return feasibility;
@@ -429,33 +382,23 @@ namespace WindowsFormsApp1
         {
             string choice = "";
             string type = "SP";
-            for (int i=0; i < OEM_ratios.Count(); i++)
+            double[] check_gearheads = OEM_ratios;
+            for (int k = 0; k < 2; k++)
             {
-                double new_torque = OEM_ratios[i] * check_motor.torq_c *100/ this_axis.duty;
-                double new_speed = check_motor.speed / OEM_ratios[i];
-                if (this_axis.torque<=new_torque && this_axis.speed < new_speed)
+                for (int i = 0; i < check_gearheads.Count(); i++)
                 {
-                    choice = Convert.ToString(OEM_ratios[i]);
-                    while (choice.Count() < 3) { choice = "0" + choice; }
-                    choice = "GH" + type+choice;
-                }
-            }
-            if (choice == "")//Check S motors
-            {
-                type = "P";
-                for (int i = 0; i < P_ratios.Count(); i++)
-                {
-                    double new_torque = P_ratios[i] * check_motor.torq_c * 100 / this_axis.duty;
-                    double new_speed = check_motor.speed / P_ratios[i];
+                    double new_torque = check_gearheads[i] * check_motor.torq_c * 100 / this_axis.duty;
+                    double new_speed = check_motor.speed / check_gearheads[i];
                     if (this_axis.torque <= new_torque && this_axis.speed < new_speed)
                     {
-                        choice = Convert.ToString(P_ratios[i]);
+                        choice = Convert.ToString(check_gearheads[i]);
+                        while (choice.Count() < 3) { choice = "0" + choice; }
                         choice = "GH" + type + choice;
                     }
                 }
-
+                type = "P";
+                check_gearheads = P_ratios;
             }
-
             return choice;
         }
 

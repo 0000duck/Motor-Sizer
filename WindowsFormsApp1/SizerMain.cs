@@ -230,9 +230,14 @@ namespace WindowsFormsApp1
                                         }
                                         choice = "GH" + type + choice;
                                         axes[indices[i]].gearhead = choice;
+                                        if (motors[k].name == "SM34165DT")
+                                        {
+                                            axes[indices[i]].gearhead += "-0.5";
+                                        }
                                         if (feas == 1)
                                         {
                                             axes[indices[i]].best_solution = motors[k].name + name_ext;
+                                            break;
                                         }
                                         else
                                         {

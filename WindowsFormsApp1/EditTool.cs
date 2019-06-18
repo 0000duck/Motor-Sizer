@@ -128,7 +128,7 @@ namespace WindowsFormsApp1
             return_axis.brake = brakeCheck.Checked;
             return_axis.io = IOBox.Checked;
             return_axis.de = DEBox.Checked;
-
+            return_axis.ps_unit = pitchStrokeUnit.Text;
             //Close window
             this.Close();
         }

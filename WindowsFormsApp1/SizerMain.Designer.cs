@@ -46,6 +46,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.outputBox = new System.Windows.Forms.TextBox();
+            this.disclaimer = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // axesListBox
@@ -258,11 +259,22 @@
             this.outputBox.Size = new System.Drawing.Size(462, 330);
             this.outputBox.TabIndex = 20;
             // 
+            // disclaimer
+            // 
+            this.disclaimer.AutoSize = true;
+            this.disclaimer.Location = new System.Drawing.Point(710, 551);
+            this.disclaimer.Name = "disclaimer";
+            this.disclaimer.Size = new System.Drawing.Size(181, 20);
+            this.disclaimer.TabIndex = 21;
+            this.disclaimer.Text = "* All sizing assumes 48V";
+            this.disclaimer.Visible = false;
+            // 
             // SizerMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1200, 692);
+            this.Controls.Add(this.disclaimer);
             this.Controls.Add(this.outputBox);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.button1);
@@ -309,5 +321,6 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label7;
         public System.Windows.Forms.TextBox outputBox;
+        private System.Windows.Forms.Label disclaimer;
     }
 }

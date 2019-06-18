@@ -148,8 +148,11 @@ namespace WindowsFormsApp1
                 //get product data
                 get_data();
 
+                //clear and display appropriate text
                 outputBox.Clear();
                 outputBox.Text = "\n";
+
+                disclaimer.Visible = true;
 
                 //size each axis
                 for (int i = 0; i < indices.Count(); i++)
@@ -160,7 +163,7 @@ namespace WindowsFormsApp1
 
                     //Check for special conditions limiting motor type 
                     ////Class 6 for ethernet protocols
-                    if (protocol == "Ethernet/IP" || protocol == "EtherCAT" || protocol == "Profinet")
+                    if (protocol == "Ethernet/IP" || protocol == "EtherCAT" || protocol == "Profinet" && axes[indices[i]].actuate==false)
                     {
                         //Get the protocol code for motor PN 
                         if (protocol == "Ethernet/IP") { name_ext = "IP"; }
@@ -170,7 +173,7 @@ namespace WindowsFormsApp1
                     }
 
                     /////Class 5 for IP rating 
-                    else if (moisture == "Splash/rain" || moisture == "Washdown")
+                    else if (moisture == "Splash/rain" || moisture == "Washdown" && axes[indices[i]].actuate == false)
                     {
                         if (axes[indices[i]].brake) { name_ext += "-BRK"; }
                         name_ext += "-IP";
@@ -193,62 +196,74 @@ namespace WindowsFormsApp1
                     }
 
                     //****Do the actual sizing calculations for each axis****
-                    for (int k = 1; k < motors.Count(); k++)
+                    ///If actuator required
+                    if (axes[indices[i]].actuate == true)
                     {
-                        double feas = Evaluate(motors[k], axes[indices[i]]);
-                        if (feas == 1)
+                        axes[indices[i]] = ActuatorSize(axes[indices[i]]); //size with actuator
+                        if (axes[indices[i]].best_solution != null)
                         {
-                            axes[indices[i]].best_solution = motors[k].name + name_ext;
-                            break;
-                        }
-                        else if (feas > best_feas) //if not a solution, but better option, store its index
-                        {
-                            best_feas = feas;
-                            axes[indices[i]].alt_soln = k;
+                            axes[indices[i]].best_solution += name_ext;
                         }
                     }
-                    //If no solution out of these, check for use with gearhead
-                    if (axes[indices[i]].best_solution == null)
+                    else
                     {
-                        string choice = "";
-                        string type = "SP";
-                        double[] check_gearheads = OEM_ratios;
-
-                        for (int f = 0; f < 2; f++)
+                        for (int k = 1; k < motors.Count(); k++)
                         {
-                            for (int k = 0; k < motors.Count(); k++)
+                            double feas = Evaluate(motors[k], axes[indices[i]]);
+                            if (feas == 1)
                             {
-                                for (int j = 0; j < check_gearheads.Count(); j++)
+                                axes[indices[i]].best_solution = motors[k].name + name_ext;
+                                break;
+                            }
+                            else if (feas > best_feas) //if not a solution, but better option, store its index
+                            {
+                                best_feas = feas;
+                                axes[indices[i]].alt_soln = k;
+                            }
+                        }
+                        //If no solution out of these, check for use with gearhead
+                        if (axes[indices[i]].best_solution == null)
+                        {
+                            string choice = "";
+                            string type = "SP";
+                            double[] check_gearheads = OEM_ratios;
+
+                            for (int f = 0; f < 2; f++)
+                            {
+                                for (int k = 0; k < motors.Count(); k++)
                                 {
-                                    double feas = Reduction(motors[k], axes[indices[i]], check_gearheads[j]);
-                                    if (feas > best_feas)
+                                    for (int j = 0; j < check_gearheads.Count(); j++)
                                     {
-                                        choice = Convert.ToString(check_gearheads[j]);
-                                        if (type == "SP")
+                                        double feas = Reduction(motors[k], axes[indices[i]], check_gearheads[j]);
+                                        if (feas > best_feas)
                                         {
-                                            while (choice.Count() < 3) { choice = "0" + choice; }
-                                        }
-                                        choice = "GH" + type + choice;
-                                        axes[indices[i]].gearhead = choice;
-                                        if (motors[k].name == "SM34165DT")
-                                        {
-                                            axes[indices[i]].gearhead += "-0.5";
-                                        }
-                                        if (feas == 1)
-                                        {
-                                            axes[indices[i]].best_solution = motors[k].name + name_ext;
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            axes[indices[i]].reduction = check_gearheads[j];
-                                            best_feas = feas;
-                                            axes[indices[i]].alt_soln = k;
+                                            choice = Convert.ToString(check_gearheads[j]);
+                                            if (type == "SP")
+                                            {
+                                                while (choice.Count() < 3) { choice = "0" + choice; }
+                                            }
+                                            choice = "GH" + type + choice;
+                                            axes[indices[i]].gearhead = choice;
+                                            if (motors[k].name == "SM34165DT")
+                                            {
+                                                axes[indices[i]].gearhead += "-0.5";
+                                            }
+                                            if (feas == 1)
+                                            {
+                                                axes[indices[i]].best_solution = motors[k].name + name_ext;
+                                                break;
+                                            }
+                                            else
+                                            {
+                                                axes[indices[i]].reduction = check_gearheads[j];
+                                                best_feas = feas;
+                                                axes[indices[i]].alt_soln = k;
+                                            }
                                         }
                                     }
+                                    type = "P";
+                                    check_gearheads = P_ratios;
                                 }
-                                type = "P";
-                                check_gearheads = P_ratios;
                             }
                         }
                     }
@@ -264,7 +279,7 @@ namespace WindowsFormsApp1
                         }
                         if (axes[indices[i]].actuator != "")
                         {
-                            outputBox.AppendText("\tActuator: " + axes[indices[i]].actuator);
+                            outputBox.AppendText("\tActuator: " + axes[indices[i]].actuator+"\n");
                         }
                     }
                     else
@@ -281,8 +296,16 @@ namespace WindowsFormsApp1
                         {
                             outputBox.AppendText("\n");
                         }
-                        outputBox.AppendText("\t\tTorque = " + Convert.ToInt16(motors[axes[indices[i]].alt_soln].torq_c*axes[indices[i]].reduction)+" oz-in \n");
-                        outputBox.AppendText("\t\tSpeed = " + Convert.ToInt16(motors[axes[indices[i]].alt_soln].speed/ axes[indices[i]].reduction) + " RPM \n");
+                        if (axes[indices[i]].actuator == "")
+                        {
+                            outputBox.AppendText("\t\tTorque = " + Convert.ToInt16(motors[axes[indices[i]].alt_soln].torq_c * axes[indices[i]].reduction) + " oz-in \n");
+                            outputBox.AppendText("\t\tSpeed = " + Convert.ToInt16(motors[axes[indices[i]].alt_soln].speed / axes[indices[i]].reduction) + " RPM \n");
+                        }
+                        else
+                        {
+                            outputBox.AppendText("\tActuator: " + axes[indices[i]].actuator + "\n");
+                            //What specs they would get out of it
+                        }
                     }
                 }
             }
@@ -430,6 +453,111 @@ namespace WindowsFormsApp1
         }
 
         //Actuator sizing
+        public Axis ActuatorSize(Axis this_axis)
+        {
+            double max_speed = 977;
+            double max_thrust = 587;
+            double HLDThrust = 135;
+            string pitch="";
+            string stroke="";
+            string extra = "";
+            MessageBox.Show(this_axis.ps_unit);
 
+            //Convert values to mm, kg, and mm/s
+            if (this_axis.m_unit != "kg")
+            {
+                this_axis.mass /= 2.2;
+            }
+            if (this_axis.ps_unit != "mm")
+            {
+                this_axis.stroke *= 25.4;
+                this_axis.pitch *= 25.4;
+            }
+            if (this_axis.s_unit == "m/s")
+            {
+                this_axis.speed *= 10;
+            }
+            else if(this_axis.s_unit == "in/s"){
+                this_axis.speed *= 25.4;
+            }
+            if (this_axis.stroke != 0)
+            {
+                stroke = Convert.ToString((Math.Ceiling(this_axis.stroke/50))*50);
+                while (stroke.Count() < 4)
+                {
+                    stroke = "0" + stroke;
+                }
+                stroke = "-" + stroke;
+            }
+
+            //Check for ability to be sized
+            if (this_axis.speed > max_speed || this_axis.thrust > max_thrust)
+            {
+                this_axis.alt_soln = 2; //corresponds to SM23165DT
+                //Max out on thrust using L70 5 mm pitch
+                if (this_axis.thrust > max_thrust)
+                {
+                    this_axis.actuator = "L70";
+                    pitch = "-050";
+                }
+                //Max out on speed with L70 10mm pitch for max thrust
+                else if (this_axis.thrust > HLDThrust)
+                {
+                    this_axis.actuator = "L70";
+                    pitch = "-100";
+                }
+                //If thrust is fine, use HLD60 12.5 mm pitch
+                else
+                {
+                    this_axis.actuator = "H3";
+                    pitch = "-125";
+                }
+            }
+            //If appropriate actuator specs are available in product line
+            else
+            {
+                this_axis.best_solution = "SM23165DT";
+                if (this_axis.torque<max_thrust && this_axis.speed < 350)
+                {
+                    this_axis.actuator = "L70";
+                    pitch = "-050";
+                }
+                else if (this_axis.torque<294 && this_axis.speed < 910)
+                {
+                    this_axis.actuator = "L70";
+                    pitch = "-100";
+                }
+                else if (this_axis.torque < 450 && this_axis.speed < 200)
+                {
+                    this_axis.actuator = "H3";
+                    pitch = "-025";
+                }
+                else if (this_axis.torque < 420 && this_axis.speed < 391)
+                {
+                    this_axis.actuator = "H3";
+                    pitch = "-050";
+                }
+                else if (this_axis.torque < 185 && this_axis.speed < 782)
+                {
+                    this_axis.actuator = "H3";
+                    pitch = "-100";
+                }
+                else if (this_axis.torque < 135 && this_axis.speed < 977)
+                {
+                    this_axis.actuator = "H3";
+                    pitch = "-125";
+                }
+            }
+            if (this_axis.actuator.Substring(0,1) == "L")
+            {
+                extra = "R-AN";
+            }
+            else
+            {
+                extra = "A-AL";
+            }
+            this_axis.actuator += stroke + pitch + extra;
+            return this_axis;
+        }
     }
 }

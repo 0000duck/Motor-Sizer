@@ -359,7 +359,7 @@
             this.pitchStrokeBox.BackColor = System.Drawing.SystemColors.Window;
             this.pitchStrokeBox.Location = new System.Drawing.Point(306, 339);
             this.pitchStrokeBox.Maximum = new decimal(new int[] {
-            20,
+            3000,
             0,
             0,
             0});

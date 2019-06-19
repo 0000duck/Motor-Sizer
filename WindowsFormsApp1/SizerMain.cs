@@ -207,6 +207,22 @@ namespace WindowsFormsApp1
                     }
                     else
                     {
+                        //Check for missing torque but present thrust and pitch
+                        if (axes[indices[i]].type && axes[indices[i]].thrust > 0 && axes[indices[i]].torque <= 0 && axes[indices[i]].pitch > 0)
+                        {
+                            axes[indices[i]].torque = axes[indices[i]].thrust * (1 / axes[indices[i]].pitch) / (2 * 3.1415);
+                        }
+
+                        //Check for acceleration torque limits
+                        if (axes[indices[i]].pitch > 0)
+                        {
+                            double accel_torq = axes[indices[i]].mass * Math.Pow((1/(axes[indices[i]].pitch*2*3.1415)),2.0);
+                            if (accel_torq > axes[indices[i]].torque)
+                            {
+                                axes[indices[i]].torque = accel_torq;
+                            }
+                        }
+
                         for (int k = 1; k < motors.Count(); k++)
                         {
                             double feas = Evaluate(motors[k], axes[indices[i]]);
@@ -285,7 +301,7 @@ namespace WindowsFormsApp1
                     else
                     {
                         outputBox.AppendText("\tNo solution found.\n");
-                        outputBox.AppendText("\tBest option: ");
+                        outputBox.AppendText("\tClosest Match: ");
                         outputBox.AppendText(motors[axes[indices[i]].alt_soln].name+name_ext);
                         if (axes[indices[i]].gearhead != "")
                         {
@@ -462,22 +478,26 @@ namespace WindowsFormsApp1
             string stroke="";
             string extra = "";
 
-            //Convert values to mm, kg, and mm/s
+            //Convert values to mm, kg, and mm/s -- also units
             if (this_axis.m_unit != "kg")
             {
                 this_axis.mass /= 2.2;
+                this_axis.m_unit = "kg";
             }
             if (this_axis.ps_unit != "mm")
             {
                 this_axis.stroke *= 25.4;
                 this_axis.pitch *= 25.4;
+                this_axis.ps_unit = "mm";
             }
             if (this_axis.s_unit == "m/s")
             {
                 this_axis.speed *= 10;
+                this_axis.ps_unit = "mm/s";
             }
             else if(this_axis.s_unit == "in/s"){
                 this_axis.speed *= 25.4;
+                this_axis.s_unit = "mm/s";
             }
             if (this_axis.stroke != 0)
             {

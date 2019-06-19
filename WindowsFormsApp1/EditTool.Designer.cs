@@ -239,7 +239,8 @@
             this.speedUnit.Items.AddRange(new object[] {
             "RPM",
             "m/s",
-            "in/s"});
+            "in/s",
+            "mm/s"});
             this.speedUnit.Location = new System.Drawing.Point(166, 202);
             this.speedUnit.Name = "speedUnit";
             this.speedUnit.Size = new System.Drawing.Size(90, 28);

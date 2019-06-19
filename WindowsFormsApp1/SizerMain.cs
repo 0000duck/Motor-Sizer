@@ -461,7 +461,6 @@ namespace WindowsFormsApp1
             string pitch="";
             string stroke="";
             string extra = "";
-            MessageBox.Show(this_axis.ps_unit);
 
             //Convert values to mm, kg, and mm/s
             if (this_axis.m_unit != "kg")

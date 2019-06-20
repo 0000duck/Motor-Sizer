@@ -379,7 +379,7 @@ namespace WindowsFormsApp1
         string[] options2 = { "IP", "FB01" };
 
         /////Class 6 
-        string[] names3 = { "SM23166MT-E", "SM23216MT-E" };
+        string[] names3 = { "SM23166MT-E", "SM23216MH-E" };
         int frames3 =  23 ;
         double[] torq_cs3 = { 68, 165 };
         double[] torq_ps3 = { 128, 300 };
@@ -453,19 +453,20 @@ namespace WindowsFormsApp1
         //Pick a gearhead
         public double Reduction(Motor check_motor, Axis this_axis, double gear_ratio)
         {
-            double weight;
-            double new_torque = gear_ratio * check_motor.torq_c * 100 / this_axis.duty;
+            double cost;
+            double efficiency=0.90;
+            double new_torque = gear_ratio * check_motor.torq_c * 100 / this_axis.duty* efficiency;
             double new_speed = check_motor.speed / gear_ratio;
             if (this_axis.torque <= new_torque && this_axis.speed < new_speed)
             {
-                weight = 1;
+                cost = 1;
             }
             else
             {
-                weight = -1 * Math.Abs(new_torque - this_axis.torque) - Math.Abs(this_axis.speed - new_speed);
+                cost = -1 * Math.Abs(new_torque - this_axis.torque) - Math.Abs(this_axis.speed - new_speed);
             }
             
-            return weight;
+            return cost;
         }
 
         //Actuator sizing

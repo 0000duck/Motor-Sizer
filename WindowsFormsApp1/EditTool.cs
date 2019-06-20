@@ -104,33 +104,42 @@ namespace WindowsFormsApp1
         //Exit button
         public void Exit(object sender, EventArgs e)
         {
-            //Capture all the data from the form
-            return_axis = new Axis();
-            return_axis.name = nameBox.Text;
-            return_axis.torque = Convert.ToDouble(torqueBox.Value);
-            return_axis.speed = Convert.ToDouble(speedBox.Value);
-            if (PitchLabel.Visible == true)
+            //Check for errors in the data entered
+            if (actuatorBox.Checked && pitchStrokeBox.Value <= 0)
             {
-                return_axis.pitch = Convert.ToDouble(pitchStrokeBox.Value);
-                return_axis.actuate = false;
-                return_axis.stroke = -1.0;
+                MessageBox.Show("Please provide a stroke length or de-select actuator sizing.");
             }
-            else if (StrokeLabel.Visible == true)
+            //If all is good, store data and close
+            else
             {
-                return_axis.stroke = Convert.ToDouble(pitchStrokeBox.Value);
-                return_axis.actuate = true;
-                return_axis.pitch = -1.0;
-            }
+                //Capture all the data from the form
+                return_axis = new Axis();
+                return_axis.name = nameBox.Text;
+                return_axis.torque = Convert.ToDouble(torqueBox.Value);
+                return_axis.speed = Convert.ToDouble(speedBox.Value);
+                if (PitchLabel.Visible == true)
+                {
+                    return_axis.pitch = Convert.ToDouble(pitchStrokeBox.Value);
+                    return_axis.actuate = false;
+                    return_axis.stroke = -1.0;
+                }
+                else if (StrokeLabel.Visible == true)
+                {
+                    return_axis.stroke = Convert.ToDouble(pitchStrokeBox.Value);
+                    return_axis.actuate = true;
+                    return_axis.pitch = -1.0;
+                }
 
-            return_axis.duty = Convert.ToDouble(dutyBox.Value);
-            return_axis.type = linearButton.Checked;
-            return_axis.actuate = actuatorBox.Checked;
-            return_axis.brake = brakeCheck.Checked;
-            return_axis.io = IOBox.Checked;
-            return_axis.de = DEBox.Checked;
-            return_axis.ps_unit = pitchStrokeUnit.Text;
-            //Close window
-            this.Close();
+                return_axis.duty = Convert.ToDouble(dutyBox.Value);
+                return_axis.type = linearButton.Checked;
+                return_axis.actuate = actuatorBox.Checked;
+                return_axis.brake = brakeCheck.Checked;
+                return_axis.io = IOBox.Checked;
+                return_axis.de = DEBox.Checked;
+                return_axis.ps_unit = pitchStrokeUnit.Text;
+                //Close window
+                this.Close();
+            }
         }
     }
 }

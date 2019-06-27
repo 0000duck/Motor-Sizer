@@ -264,9 +264,9 @@
             this.disclaimer.AutoSize = true;
             this.disclaimer.Location = new System.Drawing.Point(710, 551);
             this.disclaimer.Name = "disclaimer";
-            this.disclaimer.Size = new System.Drawing.Size(181, 20);
+            this.disclaimer.Size = new System.Drawing.Size(255, 20);
             this.disclaimer.TabIndex = 21;
-            this.disclaimer.Text = "* All sizing assumes 48V";
+            this.disclaimer.Text = "* All sizing assumes 48V DC power";
             this.disclaimer.Visible = false;
             // 
             // SizerMain

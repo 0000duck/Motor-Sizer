@@ -329,7 +329,7 @@ namespace WindowsFormsApp1
             //If no axes found
             else
             {
-                outputBox.Text = "No axes to size.\nPlease click 'Add' to size an axis.";
+                outputBox.Text = "No axes to size.\n Please click 'Add' to size an axis.";
             }
                 
         }

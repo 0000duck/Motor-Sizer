@@ -330,8 +330,7 @@ namespace WindowsFormsApp1
             else
             {
                 outputBox.Text = "No axes to size.\n Please click 'Add' to size an axis.";
-            }
-                
+            }       
         }
 
 
@@ -562,7 +561,7 @@ namespace WindowsFormsApp1
                     this_axis.actuator = "H3";
                     pitch = "-100";
                 }
-                else if (this_axis.torque < 135 && this_axis.speed < 977)
+                else if (this_axis.torque < 135 && this_axis.speed < max_speed)
                 {
                     this_axis.actuator = "H3";
                     pitch = "-125";

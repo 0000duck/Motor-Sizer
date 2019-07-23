@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.exitButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -60,6 +61,9 @@
             this.massBox = new System.Windows.Forms.NumericUpDown();
             this.MassUnit = new System.Windows.Forms.ComboBox();
             this.ADUnit = new System.Windows.Forms.ComboBox();
+            this.toolBrake = new System.Windows.Forms.ToolTip(this.components);
+            this.toolTipIO = new System.Windows.Forms.ToolTip(this.components);
+            this.toolDE = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.torqueBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.speedBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dutyBox)).BeginInit();
@@ -541,5 +545,8 @@
         private System.Windows.Forms.NumericUpDown massBox;
         private System.Windows.Forms.ComboBox MassUnit;
         private System.Windows.Forms.ComboBox ADUnit;
+        private System.Windows.Forms.ToolTip toolBrake;
+        private System.Windows.Forms.ToolTip toolTipIO;
+        private System.Windows.Forms.ToolTip toolDE;
     }
 }

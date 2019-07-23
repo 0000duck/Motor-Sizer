@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.axesListBox = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.EditButton = new System.Windows.Forms.Button();
@@ -47,6 +48,8 @@
             this.label7 = new System.Windows.Forms.Label();
             this.outputBox = new System.Windows.Forms.TextBox();
             this.disclaimer = new System.Windows.Forms.Label();
+            this.toolTipComms = new System.Windows.Forms.ToolTip(this.components);
+            this.toolTipEnv = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // axesListBox
@@ -269,6 +272,14 @@
             this.disclaimer.Text = "* All sizing assumes 48V DC power";
             this.disclaimer.Visible = false;
             // 
+            // toolTipComms
+            // 
+            this.toolTipComms.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            // 
+            // toolTipEnv
+            // 
+            this.toolTipEnv.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            // 
             // SizerMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -322,5 +333,7 @@
         private System.Windows.Forms.Label label7;
         public System.Windows.Forms.TextBox outputBox;
         private System.Windows.Forms.Label disclaimer;
+        private System.Windows.Forms.ToolTip toolTipComms;
+        private System.Windows.Forms.ToolTip toolTipEnv;
     }
 }

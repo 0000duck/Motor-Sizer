@@ -15,7 +15,11 @@ namespace WindowsFormsApp1
         public SizerMain()
         {
             InitializeComponent();
+            toolTipComms.SetToolTip(label2, "All motors come standard with serial communication. If a specific industrial protocol is desired, please select it from the dropdown.");
+            toolTipEnv.SetToolTip(label3, "If you require a sealed device or non-standard temperature operation, please specify it here.");
         }
+
+
 
         Axis selected; //the selected axis
         int p = 0; //index of the selected axis within the axes list
@@ -42,6 +46,7 @@ namespace WindowsFormsApp1
                 }
             }
         }
+
 
         /////////Add button
         public void Add_Click(object sender, EventArgs e)

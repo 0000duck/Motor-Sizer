@@ -286,9 +286,14 @@
             // 
             // torqueBox
             // 
+            this.torqueBox.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
             this.torqueBox.Location = new System.Drawing.Point(23, 143);
             this.torqueBox.Maximum = new decimal(new int[] {
-            1000,
+            1000000,
             0,
             0,
             0});

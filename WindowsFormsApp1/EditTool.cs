@@ -108,6 +108,54 @@ namespace WindowsFormsApp1
         //Exit button
         public void Exit(object sender, EventArgs e)
         {
+
+            //Capture all the data from the form
+            return_axis = new Axis();
+            return_axis.name = nameBox.Text;
+
+            //convert input torque value to oz-in in axis class for sizing
+            switch (torqueUnit.Text)
+            {
+                case "oz-in":
+                    return_axis.torque = Convert.ToDouble(torqueBox.Value);
+                    break;
+                case "Nm":
+                    return_axis.torque = Convert.ToDouble(torqueBox.Value) * 141.6;
+                    break;
+                case "ft-lb":
+                    return_axis.torque = Convert.ToDouble(torqueBox.Value) * 16.0 * 12.0;
+                    break;
+                case "in-lb":
+                    return_axis.torque = Convert.ToDouble(torqueBox.Value) * 16.0;
+                    break;
+                default:
+                    return_axis.torque = Convert.ToDouble(torqueBox.Value);
+                    break;
+            }
+
+            return_axis.speed = Convert.ToDouble(speedBox.Value);
+
+            if (PitchLabel.Visible == true)
+            {
+                return_axis.pitch = Convert.ToDouble(pitchStrokeBox.Value);
+                return_axis.actuate = false;
+                return_axis.stroke = -1.0;
+            }
+            else if (StrokeLabel.Visible == true)
+            {
+                return_axis.stroke = Convert.ToDouble(pitchStrokeBox.Value);
+                return_axis.actuate = true;
+                return_axis.pitch = -1.0;
+            }
+
+            return_axis.duty = Convert.ToDouble(dutyBox.Value);
+            return_axis.type = linearButton.Checked;
+            return_axis.actuate = actuatorBox.Checked;
+            return_axis.brake = brakeCheck.Checked;
+            return_axis.io = IOBox.Checked;
+            return_axis.de = DEBox.Checked;
+            return_axis.ps_unit = pitchStrokeUnit.Text;
+
             //Check for errors in the data entered
             if (actuatorBox.Checked && pitchStrokeBox.Value <= 0)
             {
@@ -116,34 +164,10 @@ namespace WindowsFormsApp1
             //If all is good, store data and close
             else
             {
-                //Capture all the data from the form
-                return_axis = new Axis();
-                return_axis.name = nameBox.Text;
-                return_axis.torque = Convert.ToDouble(torqueBox.Value);
-                return_axis.speed = Convert.ToDouble(speedBox.Value);
-                if (PitchLabel.Visible == true)
-                {
-                    return_axis.pitch = Convert.ToDouble(pitchStrokeBox.Value);
-                    return_axis.actuate = false;
-                    return_axis.stroke = -1.0;
-                }
-                else if (StrokeLabel.Visible == true)
-                {
-                    return_axis.stroke = Convert.ToDouble(pitchStrokeBox.Value);
-                    return_axis.actuate = true;
-                    return_axis.pitch = -1.0;
-                }
-
-                return_axis.duty = Convert.ToDouble(dutyBox.Value);
-                return_axis.type = linearButton.Checked;
-                return_axis.actuate = actuatorBox.Checked;
-                return_axis.brake = brakeCheck.Checked;
-                return_axis.io = IOBox.Checked;
-                return_axis.de = DEBox.Checked;
-                return_axis.ps_unit = pitchStrokeUnit.Text;
                 //Close window
                 this.Close();
             }
         }
+
     }
 }

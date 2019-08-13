@@ -42,15 +42,17 @@ namespace WindowsFormsApp1
             //Check the boxes and buttons
             if (axis_in.type){linearButton.Checked = true;}
             else {
-                rotateButton.Checked=true;
+                rotateButton.Checked = true;
                 thrustBox.Visible = false;
                 ThrustLabel.Visible = false;
                 thrustUnit.Visible = false;
             }
-            if (axis_in.actuate) { actuatorBox.CheckState=CheckState.Checked; }
-            if (axis_in.brake) { brakeCheck.CheckState = CheckState.Checked; }
-            if (axis_in.de) { DEBox.CheckState = CheckState.Checked; }
-            if (axis_in.io) { IOBox.CheckState = CheckState.Checked; }
+            if (axis_in.actuate) { actuatorBox.Checked=true; }
+            else { actuatorBox.Checked = false; }
+            if (axis_in.brake) { brakeCheck.Checked=true; }
+            if (axis_in.de) { DEBox.Checked = true; }
+            if (axis_in.io) { IOBox.Checked = true; }
+
 
             toolBrake.SetToolTip(brakeCheck, "Internal brakes can be added so that the motor maintains position on power loss, particularly in vertical applications.");
             toolDE.SetToolTip(DEBox, "Drive enable allows the 'brains' of the motor to remain powered separately from the 'muscle'.");
@@ -138,13 +140,13 @@ namespace WindowsFormsApp1
             if (PitchLabel.Visible == true)
             {
                 return_axis.pitch = Convert.ToDouble(pitchStrokeBox.Value);
-                return_axis.actuate = false;
+                //return_axis.actuate = false;
                 return_axis.stroke = -1.0;
             }
             else if (StrokeLabel.Visible == true)
             {
                 return_axis.stroke = Convert.ToDouble(pitchStrokeBox.Value);
-                return_axis.actuate = true;
+                //return_axis.actuate = true;
                 return_axis.pitch = -1.0;
             }
 

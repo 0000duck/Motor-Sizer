@@ -168,7 +168,7 @@
             this.linearButton.TabStop = true;
             this.linearButton.Text = "Linear Motion";
             this.linearButton.UseVisualStyleBackColor = true;
-            this.linearButton.CheckedChanged += new System.EventHandler(this.Linear);
+            this.linearButton.Click += new System.EventHandler(this.Linear);
             // 
             // actuatorBox
             // 
@@ -181,7 +181,7 @@
             this.actuatorBox.TabIndex = 13;
             this.actuatorBox.Text = "Size an actuator";
             this.actuatorBox.UseVisualStyleBackColor = true;
-            this.actuatorBox.CheckedChanged += new System.EventHandler(this.Actuator);
+            this.actuatorBox.Click += new System.EventHandler(this.Actuator);
             // 
             // brakeCheck
             // 

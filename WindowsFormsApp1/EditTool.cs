@@ -55,8 +55,8 @@ namespace WindowsFormsApp1
 
 
             toolBrake.SetToolTip(brakeCheck, "Internal brakes can be added so that the motor maintains position on power loss, particularly in vertical applications.");
-            toolDE.SetToolTip(DEBox, "Drive enable allows the 'brains' of the motor to remain powered separately from the 'muscle'.");
-            toolTipIO.SetToolTip(IOBox, "Check box if 24V I/O is preferred (over 5V).");
+            toolDE.SetToolTip(DEBox, "Drive enable allows the motor drive to be powered separately from control.");
+            toolTipIO.SetToolTip(IOBox, "5V is standard on some models. Select if you plan to use 24V ANALOG I/O.");
         }
 
         //Change to rotation
